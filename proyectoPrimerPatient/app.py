@@ -7,7 +7,6 @@ from modelo.Patient import Patient
 
 app = Flask(__name__)
 
-
 # Endpoint to retrieve (GET request) Por Documento (identifier)
 @app.route('/patient', methods=['GET'])
 def get_patients():
@@ -43,17 +42,27 @@ def get_patient_by_id(patient_id):
 @app.route('/patients', methods=['POST'])
 def add_patient():
     newPatientDict = json.loads(request.data)
-    newPatient = Patient(
-        newPatientDict["name"],
-        [Identifier(f["type"],f["value"]) for f in newPatientDict["identifiers"]],
-        newPatientDict["gender"],
-        newPatientDict["dob"],
-        True
-    )
+    # Ajustar la estructura del diccionario para coincidir con el constructor de Patient
+    patient_input = {
+        "active": True,  # Asumiendo que el paciente está activo
+        "identifier": [{"type": f["type"], "value": f["value"]} for f in newPatientDict["identifiers"]],
+        "gender": newPatientDict["gender"],
+        "birthDate": newPatientDict["dob"],
+        "name": {
+            "family": newPatientDict["name"]["family"],
+            "given": newPatientDict["name"]["given"],
+            "prefix": newPatientDict["name"].get("prefix", None)
+        },
+        "telecom": []  # Agregar si tienes datos de contacto
+    }
+
+    # Crear el objeto Patient con el diccionario ajustado
+    newPatient = Patient(patient_input)
     status = newPatient.save_to_database()
+
     if status == "success":
-        return "Patient was saved",201
-    return status
+        return "Patient was saved", 201
+    return {"error": "Failed to save patient"}, 400
 
 if __name__ == '__main__':
     app.run(debug=True)
