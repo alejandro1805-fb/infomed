@@ -6,7 +6,8 @@ def get_connection():
         user='ManuelGuillermoSanchez',
         password='Python2024*.',
         database='ManuelGuillermoSanchez$default',
-        ssl_ca='/etc/ssl/certs/ca-certificates.crt'  
+        ssl_ca=None,
+        use_pure=True
     )
     return conn
 
