@@ -64,11 +64,8 @@ def add_patient():
 
         if status == "success":
             return jsonify({"message": "Patient was saved successfully"}), 201
-        elif status == "error: duplicate_identifier":
-            return jsonify({"error": "A patient with this IDENTIFIER already exists"}), 409  # 409 Conflict
         else:
             return jsonify({"error": "Failed to save patient"}), 400
-
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
