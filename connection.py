@@ -5,7 +5,7 @@ def get_connection():
         host='alejandro1805.mysql.pythonanywhere-services.com',
         user='alejandro1805',
         password='Fafb!1011089600',
-        database='alejandro1805$claseInicial',
+        database='alejandro1805$infomeddb',
 
     )
     return conn
