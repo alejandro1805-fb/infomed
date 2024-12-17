@@ -18,13 +18,13 @@ class Patient:
         
         # Identificadores secundarios
         self.identifiers = [
-            Identifier(type=ident["type"], value=ident["value"]) 
+            Identifier(tipo=ident["type"], value=ident["value"]) 
             for ident in inputDict.get("identifiers", [])
         ]
         
         # Contactos del paciente (teléfonos, etc.)
         self.telecom = [
-            ContactPoint(system=tel["system"], value=tel["value"], use=tel["use"])
+            ContactPoint(sistema=tel["system"], value=tel["value"], uso=tel["use"])
             for tel in inputDict.get("telecom", [])
         ]
 
