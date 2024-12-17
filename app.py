@@ -5,27 +5,22 @@ from controlador.patientsOperation import getPatientById, getPatientByIdentifier
 from modelo.Identifier import Identifier
 from modelo.Patient import Patient
 from controlador.saveDbOperations import saveToDatabase
+from controlador.patientsOperation import getAllPatients
 
 app = Flask(__name__)
 
 # Endpoint to retrieve (GET request) Por Documento (identifier)
-@app.route('/patient', methods=['GET'])
-def get_patients():
-    type = request.args.get('type')
-    value = request.args.get('value')
-    # Consistencia
-    if type is None or value is None:
-        return '''<h1>Not valid type or value</h1>''',400
-    # Siguientes pasos
-    ident = Identifier(type,value)
-    myPatient,status = getPatientByIdentifier(ident)
-    if status == "success":
-        return jsons.dump(myPatient),200
-    elif "noExiste":
-        return status,201
-    else:
-        return status,400
-
+@app.route('/patients', methods=['GET'])
+def get_all_patients():
+    try:
+        # Obtener todos los pacientes con ContactPoints e Identifiers
+        patients_list, status = getAllPatients()
+        if status == "success":
+            return jsonify(patients_list), 200  # Devuelve la lista de pacientes como JSON
+        else:
+            return jsonify({"error": "Failed to retrieve patients"}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/patients/<int:patient_id>', methods=['GET'])
 def get_patient_by_id(patient_id):
