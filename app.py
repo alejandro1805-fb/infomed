@@ -39,19 +39,6 @@ def get_patient_by_identifier(identifier):
 # Endpoint to add a new book (POST request)
 @app.route('/patients', methods=['POST'])
 
-def find_patient_by_identifier(identifier):
-    # Simula una búsqueda en la base de datos
-    # Deberás reemplazar esto con una consulta real
-    database = [
-        {"identifier": "12345678", "active": True},
-        {"identifier": "87654321", "active": False}
-    ]
-
-    for patient in database:
-        if patient["identifier"] == identifier:
-            return patient
-    return None
-
 
 def add_patient():
     try:
