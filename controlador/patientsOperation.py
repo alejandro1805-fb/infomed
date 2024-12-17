@@ -22,7 +22,7 @@ def getAllPatients():
         for patient in patients:
             # Obtener Identifiers
             query_identifiers = """
-                SELECT TIPO AS type, VALUE
+                SELECT TIPO, VALUE
                 FROM IDENTIFIER
                 WHERE PATIENT_ID = %s;
             """
@@ -31,7 +31,7 @@ def getAllPatients():
 
             # Obtener ContactPoints
             query_contact_points = """
-                SELECT `SISTEMA` AS system, VALUE, USO AS use
+                SELECT SISTEMA, VALUE, USO AS use
                 FROM CONTACTPOINT
                 WHERE PATIENT_ID = %s;
             """
