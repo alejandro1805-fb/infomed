@@ -9,8 +9,9 @@ from controlador.patientsOperation import getAllPatients
 
 app = Flask(__name__)
 
+
 # Endpoint to retrieve (GET request) Por Documento (identifier)
-@app.route('/patients', methods=['GET'])
+@app.route('/allpatients', methods=['GET'])
 def get_all_patients():
     try:
         # Obtener todos los pacientes con ContactPoints e Identifiers
