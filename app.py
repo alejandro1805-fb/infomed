@@ -6,9 +6,10 @@ from modelo.Identifier import Identifier
 from modelo.Patient import Patient
 from controlador.saveDbOperations import saveToDatabase
 from controlador.patientsOperation import getAllPatients
+import logging
 
 app = Flask(__name__)
-
+logging.basicConfig(level=logging.DEBUG)
 
 # Endpoint to retrieve (GET request) Por Documento (identifier)
 @app.route('/allpatients', methods=['GET'])
