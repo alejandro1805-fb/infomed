@@ -9,7 +9,6 @@ from controlador.patientsOperation import getAllPatients
 import logging
 
 app = Flask(__name__)
-logging.basicConfig(level=logging.DEBUG)
 
 # Endpoint to retrieve (GET request) Por Documento (identifier)
 @app.route('/allpatients', methods=['GET'])
@@ -18,13 +17,10 @@ def get_all_patients():
         logging.info("GET /allpatients - Petición recibida")
         patients_list, status = getAllPatients()
         if status == "success":
-            logging.info("GET /allpatients - Respuesta exitosa")
             return jsonify(patients_list), 200
         else:
-            logging.error("GET /allpatients - Error al recuperar los datos")
             return jsonify({"error": "Failed to retrieve patients"}), 400
     except Exception as e:
-        logging.exception(f"Error en GET /allpatients: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/patients/<int:patient_id>', methods=['GET'])
