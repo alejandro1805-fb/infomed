@@ -31,7 +31,7 @@ def getAllPatients():
 
             # Obtener ContactPoints
             query_contact_points = """
-                SELECT SISTEMA AS system, VALUE, USO AS use
+                SELECT `SISTEMA` AS system, VALUE, USO AS use
                 FROM CONTACTPOINT
                 WHERE PATIENT_ID = %s;
             """
