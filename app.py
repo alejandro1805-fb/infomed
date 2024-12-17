@@ -15,13 +15,16 @@ logging.basicConfig(level=logging.DEBUG)
 @app.route('/allpatients', methods=['GET'])
 def get_all_patients():
     try:
-        # Obtener todos los pacientes con ContactPoints e Identifiers
+        logging.info("GET /allpatients - Petición recibida")
         patients_list, status = getAllPatients()
         if status == "success":
-            return jsonify(patients_list), 200  # Devuelve la lista de pacientes como JSON
+            logging.info("GET /allpatients - Respuesta exitosa")
+            return jsonify(patients_list), 200
         else:
+            logging.error("GET /allpatients - Error al recuperar los datos")
             return jsonify({"error": "Failed to retrieve patients"}), 400
     except Exception as e:
+        logging.exception(f"Error en GET /allpatients: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/patients/<int:patient_id>', methods=['GET'])
