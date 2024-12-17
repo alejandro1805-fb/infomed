@@ -22,7 +22,7 @@ def getAllPatients():
         for patient in patients:
             # Obtener Identifiers
             query_identifiers = """
-                SELECT TIPO, VALUE
+                SELECT TIPO AS type, VALUE
                 FROM IDENTIFIER
                 WHERE PATIENT_ID = %s;
             """
