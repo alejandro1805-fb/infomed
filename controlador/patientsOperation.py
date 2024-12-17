@@ -48,31 +48,33 @@ def getAllPatients():
         cursor.close()
         conn.close()
 
-
-
 def getPatientByIdentifier(identifier):
     try:
         conn = get_connection()
-        cursor = conn.cursor(dictionary=True)
-
-        # Consulta del paciente
-        cursor.execute("SELECT * FROM PATIENT WHERE IDENTIFIER = %s", (identifier,))
-        patient = cursor.fetchone()
         
+        # Cursor principal para el paciente
+        cursor_patient = conn.cursor(dictionary=True)
+        cursor_patient.execute("SELECT * FROM PATIENT WHERE IDENTIFIER = %s", (identifier,))
+        patient = cursor_patient.fetchone()
+        cursor_patient.close()  # Cerrar cursor después de usarlo
+
         if not patient:
             return None, "not found"
-        
-        # Consulta para IDENTIFIERS
-        cursor.execute("SELECT * FROM IDENTIFIER WHERE PATIENT_ID = %s", (patient["ID"],))
-        patient["IDENTIFIERS"] = cursor.fetchall()
 
-        # Consulta para CONTACT_POINTS
-        cursor.execute("SELECT * FROM CONTACTPOINT WHERE PATIENT_ID = %s", (patient["ID"],))
-        patient["CONTACT_POINTS"] = cursor.fetchall()
+        # Cursor para IDENTIFIERS
+        cursor_identifiers = conn.cursor(dictionary=True)
+        cursor_identifiers.execute("SELECT * FROM IDENTIFIER WHERE PATIENT_ID = %s", (patient["ID"],))
+        patient["IDENTIFIERS"] = cursor_identifiers.fetchall()
+        cursor_identifiers.close()  # Cerrar cursor después de usarlo
 
-        cursor.close()  # Cerrar el cursor
-        conn.close()    # Cerrar la conexión
+        # Cursor para CONTACT_POINTS
+        cursor_contact = conn.cursor(dictionary=True)
+        cursor_contact.execute("SELECT * FROM CONTACTPOINT WHERE PATIENT_ID = %s", (patient["ID"],))
+        patient["CONTACT_POINTS"] = cursor_contact.fetchall()
+        cursor_contact.close()  # Cerrar cursor después de usarlo
 
+        # Cerrar la conexión
+        conn.close()
         return patient, "success"
 
     except Exception as e:
