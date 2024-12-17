@@ -48,124 +48,48 @@ def getAllPatients():
         cursor.close()
         conn.close()
 
+from connection import get_connection
 
-def getPatientById(p_id):
-    conn = get_connection()
-    query = f"""
-        SELECT p.PATIENT_ID, p.NAME, p.GENDER, p.BIRTHDATE  , i.TYPE, i.VALUE
-        FROM PATIENT p
-        INNER JOIN IDENTIFIER i
-        ON p.ID=i.PATIENT_ID
-        WHERE p.ID='{p_id}';
-    """
-    cursor = conn.cursor()
-    cursor.execute(query)
-    results=cursor.fetchall()
-    if len(results)==0:
-        conn.close()
-        return None,"No registered patient"
-    identifiersList = list()
-    for row in results:
-        p_id = row[0]
-        name = row[1]
-        gender = row[2]
-        dob = row[3]
-        identifiersList.append(Identifier(row[4]),row[5])
-    conn.close()
-    return Patient(name,identifiersList,gender,dob,p_id),"success"
-
-
-def getPatientByIdentifier(ident:Identifier):
-    conn = get_connection()
-    cursor = conn.cursor()
-    ## Verificar existencia en BD
+def getPatientByIdentifier(identifier):
     try:
-        query = f"""
-            SELECT PATIENT_ID
-            FROM IDENTIFIER
-            WHERE TYPE='{ident.type}' AND VALUE='{ident.value}';
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Consulta SQL para obtener un paciente por IDENTIFIER
+        query_patient = """
+            SELECT ID, IDENTIFIER, FIRST_NAME, LAST_NAME, ACTIVE, GENDER, BIRTH_DATE
+            FROM PATIENT
+            WHERE IDENTIFIER = %s;
         """
-        cursor.execute(query)
-        resultPatId=cursor.fetchone()
-        #
-        if resultPatId is None or len(resultPatId)==0:
-            cursor.close()
-            conn.close()
-            return None,"noExiste"
-    except:
+        cursor.execute(query_patient, (identifier,))
+        patient = cursor.fetchone()
+
+        if not patient:
+            return None, "not_found"
+
+        # Obtener los IDENTIFIERS asociados al paciente
+        query_identifiers = """
+            SELECT TIPO, VALUE
+            FROM IDENTIFIER
+            WHERE PATIENT_ID = %s;
+        """
+        cursor.execute(query_identifiers, (patient["ID"],))
+        patient["IDENTIFIERS"] = cursor.fetchall()
+
+        # Obtener los CONTACT_POINTS asociados al paciente
+        query_contactpoints = """
+            SELECT SISTEMA, VALUE, USO
+            FROM CONTACTPOINT
+            WHERE PATIENT_ID = %s;
+        """
+        cursor.execute(query_contactpoints, (patient["ID"],))
+        patient["CONTACT_POINTS"] = cursor.fetchall()
+
         cursor.close()
         conn.close()
-        return None, 'fallaInterna'
 
-    #
-    ## Consultar Patients
-    query = f"""
-        SELECT FIRST_NAME, LAST_NAME, ACTIVE, GENDER, BIRTH_DATE
-        FROM PATIENT
-        WHERE PATIENT_ID='{resultPatId[0]}';
-    """
-    cursor.execute(query)
-    resultPatientsList=cursor.fetchone()
-    #
-    ## Consultar Identifiers
-    query = f"""
-        SELECT TYPE, VALUE
-        FROM IDENTIFIER
-        WHERE PATIENT_ID='{resultPatId[0]}';
-    """
-    cursor.execute(query)
-    resultIdentifiers=cursor.fetchall()
-    #
-    listIdent = list()
-    for idList in resultIdentifiers:
-        listIdent.append(
-            {
-                "type":idList[0],
-                "value":idList[1]
-            }
-        )
-    cursor.close()
-    conn.close()
-    #
-    ## Consultar Contact Point
-    query= f"""
-        SELECT SISTEMA, VALUE, USO
-        FROM CONTACTPOINT
-        WHERE PATIENT_ID='{resultPatId[0]}';
-    """
-    cursor.execute(query)
-    resultsContactPointList=cursor.fetchall()
-    
-    listContactPoint = list()
-    for tels in resultsContactPointList:
-        listContactPoint.append(
-            {
-                'system':tels[0],
-                'value':tels[1],
-                'use':tels[2]
-            }
-        )
-    cursor.close()
-    conn.close()
+        return patient, "success"
 
-    # Consultar Patient
-    #
-    patDict = dict()
-    patDict["Identifier"] = listIdent
-    patDict["contactPoint"] = listContactPoint
-    patDict["name"] = {
-        "family":resultPatientsList[0],
-        "given":resultPatientsList[1],
-        "prefix":resultPatientsList[2]
-    }
-    patDict["active"] = True
-    patDict["gender"] = resultPatientsList[4]
-    patDict["birthdate"] = resultPatientsList[3].strftime['%Y-%m-%d']
-    #
-    myPatient  = Patient(
-        patDict
-    )
-    cursor.close()
-    conn.close()
-    return myPatient,"success"
-
+    except Exception as e:
+        print(f"Error fetching patient by identifier: {e}")
+        return None, "error"

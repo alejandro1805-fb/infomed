@@ -5,7 +5,7 @@ from controlador.patientsOperation import getPatientById, getPatientByIdentifier
 from modelo.Identifier import Identifier
 from modelo.Patient import Patient
 from controlador.saveDbOperations import saveToDatabase
-from controlador.patientsOperation import getAllPatients
+from controlador.patientsOperation import getAllPatients, getPatientByIdentifier
 import logging
 
 app = Flask(__name__)
@@ -23,15 +23,17 @@ def get_all_patients():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/patients/<int:patient_id>', methods=['GET'])
-def get_patient_by_id(patient_id):
-    # Assuming getPatientById is a function that retrieves a patient by their ID
-    myPatient, status = getPatientById(patient_id)  
-    
-    if status == "success":
-        return jsons.dump(myPatient), 200  # Use 200 OK for successful retrieval
-    else:
-        return {'error': f'Patient with ID {patient_id} not found'}, 404  # Return 404 if not found
+@app.route('/patients/<int:identifier>', methods=['GET'])
+def get_patient_by_identifier(identifier):
+    try:
+        # Llamada a la función que obtiene un paciente específico
+        patient_data, status = getPatientByIdentifier(identifier)
+        if status == "success":
+            return jsonify(patient_data), 200  # Devuelve el paciente en formato JSON
+        else:
+            return jsonify({"error": "Patient not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 
