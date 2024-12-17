@@ -1,4 +1,4 @@
 class Identifier:
-    def __init__(self,type,value):
-        self.type = type
+    def __init__(self,tipo,value):
+        self.tipo = tipo
         self.value = value
