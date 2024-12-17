@@ -16,6 +16,7 @@ class Patient:
         self.first_name = inputDict["name"]["given"]
         self.last_name = inputDict["name"]["family"]
         
+        
         # Identificadores secundarios
         self.identifiers = [
             Identifier(tipo=ident["type"], value=ident["value"]) 
