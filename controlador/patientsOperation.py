@@ -48,45 +48,30 @@ def getAllPatients():
         cursor.close()
         conn.close()
 
-from connection import get_connection
+
 
 def getPatientByIdentifier(identifier):
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
 
-        # Consulta SQL para obtener un paciente por IDENTIFIER
-        query_patient = """
-            SELECT ID, IDENTIFIER, FIRST_NAME, LAST_NAME, ACTIVE, GENDER, BIRTH_DATE
-            FROM PATIENT
-            WHERE IDENTIFIER = %s;
-        """
-        cursor.execute(query_patient, (identifier,))
+        # Consulta del paciente
+        cursor.execute("SELECT * FROM PATIENT WHERE IDENTIFIER = %s", (identifier,))
         patient = cursor.fetchone()
-
+        
         if not patient:
-            return None, "not_found"
-
-        # Obtener los IDENTIFIERS asociados al paciente
-        query_identifiers = """
-            SELECT TIPO, VALUE
-            FROM IDENTIFIER
-            WHERE PATIENT_ID = %s;
-        """
-        cursor.execute(query_identifiers, (patient["ID"],))
+            return None, "not found"
+        
+        # Consulta para IDENTIFIERS
+        cursor.execute("SELECT * FROM IDENTIFIER WHERE PATIENT_ID = %s", (patient["ID"],))
         patient["IDENTIFIERS"] = cursor.fetchall()
 
-        # Obtener los CONTACT_POINTS asociados al paciente
-        query_contactpoints = """
-            SELECT SISTEMA, VALUE, USO
-            FROM CONTACTPOINT
-            WHERE PATIENT_ID = %s;
-        """
-        cursor.execute(query_contactpoints, (patient["ID"],))
+        # Consulta para CONTACT_POINTS
+        cursor.execute("SELECT * FROM CONTACTPOINT WHERE PATIENT_ID = %s", (patient["ID"],))
         patient["CONTACT_POINTS"] = cursor.fetchall()
 
-        cursor.close()
-        conn.close()
+        cursor.close()  # Cerrar el cursor
+        conn.close()    # Cerrar la conexión
 
         return patient, "success"
 
