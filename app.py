@@ -38,6 +38,21 @@ def get_patient_by_identifier(identifier):
 
 # Endpoint to add a new book (POST request)
 @app.route('/patients', methods=['POST'])
+
+def find_patient_by_identifier(identifier):
+    # Simula una búsqueda en la base de datos
+    # Deberás reemplazar esto con una consulta real
+    database = [
+        {"identifier": "12345678", "active": True},
+        {"identifier": "87654321", "active": False}
+    ]
+
+    for patient in database:
+        if patient["identifier"] == identifier:
+            return patient
+    return None
+
+
 def add_patient():
     try:
         newPatientDict = request.get_json()
@@ -56,6 +71,12 @@ def add_patient():
             "telecom": newPatientDict.get("CONTACT_POINTS", [])
         }
 
+        # Verificar si ya existe un paciente activo con el mismo IDENTIFIER
+        existing_patient = find_patient_by_identifier(new_patient["identifier"])
+
+        if existing_patient and existing_patient["active"]:  # Paciente activo ya existe
+            return jsonify({"error": f"Patient with IDENTIFIER {new_patient['identifier']} already exists and is active"}), 400
+
         # Guardar en base de datos
         status = saveToDatabase(new_patient)
 
@@ -68,4 +89,4 @@ def add_patient():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, host="0.0.0.0", port=5001)
+    app.run(debug=True, port=5001)
