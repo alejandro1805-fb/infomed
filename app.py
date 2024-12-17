@@ -36,7 +36,6 @@ def get_patient_by_identifier(identifier):
         return jsonify({"error": str(e)}), 500
 
 
-
 # Endpoint to add a new book (POST request)
 @app.route('/patients', methods=['POST'])
 def add_patient():
