@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 import jsons
 import json
-from controlador.patientsOperation import getPatientById, getPatientByIdentifier
+from controlador.patientsOperation import getPatientByIdentifier
 from modelo.Identifier import Identifier
 from modelo.Patient import Patient
 from controlador.saveDbOperations import saveToDatabase
