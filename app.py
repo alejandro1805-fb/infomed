@@ -58,11 +58,6 @@ def add_patient():
             "telecom": newPatientDict.get("CONTACT_POINTS", [])
         }
 
-        # Verificar si ya existe un paciente activo con el mismo IDENTIFIER
-        existing_patient = find_patient_by_identifier(new_patient["identifier"])
-
-        if existing_patient and existing_patient["active"]:  # Paciente activo ya existe
-            return jsonify({"error": f"Patient with IDENTIFIER {new_patient['identifier']} already exists and is active"}), 400
 
         # Guardar en base de datos
         status = saveToDatabase(new_patient)
