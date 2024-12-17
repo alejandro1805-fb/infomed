@@ -1,6 +1,6 @@
 class ContactPoint:
     
-    def __init__(self,sistema,value,use):
+    def __init__(self,sistema,value,uso):
         self.sistema = sistema
         self.value = value
-        self.use = use
+        self.uso = uso
